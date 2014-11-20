@@ -5,6 +5,7 @@
 
 import ConfigParser
 import flickr_api
+import sys
 
 def main():
     ''' Runs the search and prints statistics.
@@ -27,10 +28,14 @@ def main():
     photos = findPhotos()
 
     devices = {}
+    count = 0
     for photo in photos:
+        count = count + 1
         device = getCameraInfo(photo)
         cur = devices.get(device, 0)
         devices[device] = cur + 1
+        sys.stdout.write('\rGetting EXIF for photo #%d.' % count)
+        sys.stdout.flush()
 
     freqs = [(v, k[0], k[1]) for k, v in devices.iteritems()]
     freqs.sort(reverse=True)
