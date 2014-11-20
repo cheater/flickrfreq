@@ -5,6 +5,7 @@
 
 import ConfigParser
 import flickr_api
+import texttable
 import sys
 
 def main():
@@ -39,6 +40,15 @@ def main():
     devices = {}
     for k in set(old_devices.keys() + new_devices.keys()):
         devices[k] = old_devices.get(k, 0) + new_devices.get(k, 0)
+
+    freqs = [(v, k[0], k[1]) for k, v in devices.iteritems()]
+    freqs.sort(reverse=True)
+
+    table = texttable.Texttable()
+    table.add_rows([('Frequency', 'Make', 'Model')] + freqs)
+
+    print ''
+    print table.draw()
 
 
 def getDevices(api_key, api_secret):
