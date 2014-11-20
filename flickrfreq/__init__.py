@@ -7,6 +7,8 @@ import ConfigParser
 import flickr_api
 import texttable
 import sys
+import pickle
+import os
 
 def main():
     ''' Runs the search and prints statistics.
@@ -19,10 +21,15 @@ def main():
         api_secret=your-api-secret
         use=True
 
+        [Local]
+        db=flickrfreq.db
+
         8<-------------------------------------
 
         'use' is a boolean flag which tells the program if it should load new
         data from Flickr or just use the existing database.
+
+        'db' is the file name for the database.
 
         '''
 
@@ -35,11 +42,24 @@ def main():
         new_devices = getDevices(
             config.get('Flickr', 'api_key'), config.get('Flickr', 'api_secret'))
 
+    db_fname = config.get('Local', 'db')
     old_devices = {}
+    if os.path.exists(db_fname):
+        db = open(db_fname, 'r+')
+        print 'Restoring EXIF data from ' + db_fname
+        old_devices = pickle.load(db)
+        db.close()
 
     devices = {}
     for k in set(old_devices.keys() + new_devices.keys()):
         devices[k] = old_devices.get(k, 0) + new_devices.get(k, 0)
+
+    # save data to file
+    db = open(db_fname, 'w+')
+    db.truncate(0)
+    pickle.dump(devices, db)
+    db.flush()
+    db.close()
 
     freqs = [(v, k[0], k[1]) for k, v in devices.iteritems()]
     freqs.sort(reverse=True)
@@ -87,13 +107,14 @@ def getCameraInfo(photo):
     make = model = None
 
     # linear search through the tags.
+    # We need to make the model and make normal strings, or pickle bugs out.
     make_encountered = model_encountered = False
     for e in exif_tags:
         if 'make' == e.tag.lower():
-            make = e.raw.strip()
+            make = str(e.raw.strip())
             make_encountered = True
         elif 'model' == e.tag.lower():
-            model = e.raw.strip()
+            model = str(e.raw.strip())
             model_encountered = True
 
         if make_encountered and model_encountered:
