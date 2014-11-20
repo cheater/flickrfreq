@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 ''' This program makes statistics on Flickr photos. You have to install
     flickr_api and texttable to use it.
+
+    Execute with python -m flickrfreq.
     '''
 
 import ConfigParser
