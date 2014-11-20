@@ -34,8 +34,10 @@ def main():
         device = getCameraInfo(photo)
         cur = devices.get(device, 0)
         devices[device] = cur + 1
-        sys.stdout.write('\rGetting EXIF for photo #%d.' % count)
+        sys.stdout.write('\rGot EXIF for photo #%d.' % count)
         sys.stdout.flush()
+    sys.stdout.write('\r\n')
+    sys.stdout.flush()
 
     freqs = [(v, k[0], k[1]) for k, v in devices.iteritems()]
     freqs.sort(reverse=True)
