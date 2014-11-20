@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-''' This program makes statistics on Flickr photos. You have to install
+''' This program is flickrfreq, released under the Apache License, Version 2.0.
+
+    flickrfreq makes statistics on Flickr photos. You have to install
     flickr_api and texttable to use it.
 
     Execute with python -m flickrfreq.
