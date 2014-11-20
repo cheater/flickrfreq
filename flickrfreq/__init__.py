@@ -39,7 +39,7 @@ def main():
     new_devices = {}
     if config.getboolean('Flickr', 'use'):
         print 'Getting new EXIF data from Flickr...'
-        new_devices = getDevices(
+        new_devices = get_devices(
             config.get('Flickr', 'api_key'), config.get('Flickr', 'api_secret'))
 
     db_fname = config.get('Local', 'db')
@@ -71,18 +71,18 @@ def main():
     print table.draw()
 
 
-def getDevices(api_key, api_secret):
+def get_devices(api_key, api_secret):
     ''' Gets the frequencies of devices used to make photos from a sample of
         photos obtained from Flickr. '''
 
     flickr_api.set_keys(api_key, api_secret)
-    photos = findPhotos()
+    photos = find_photos()
 
     devices = {}
     count = 0
     for photo in photos:
         count = count + 1
-        device = getCameraInfo(photo)
+        device = get_camera_info(photo)
         cur = devices.get(device, 0)
         devices[device] = cur + 1
         sys.stdout.write('\rGot EXIF for photo #%d' % count)
@@ -93,7 +93,7 @@ def getDevices(api_key, api_secret):
     return devices
 
 
-def getCameraInfo(photo):
+def get_camera_info(photo):
     ''' Takes a Photo from flickr_api and returns the make and model of the
         device it was taken with. Sometimes those may be None. '''
 
@@ -123,7 +123,7 @@ def getCameraInfo(photo):
     return (make, model)
 
 
-def findPhotos():
+def find_photos():
     ''' Gets a list of photos that are creative commons. '''
 
     # content_type 1 means "photo".
