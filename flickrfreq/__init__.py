@@ -16,15 +16,36 @@ def main():
         [Flickr]
         api_key=your-api-key
         api_secret=your-api-secret
+        use=True
 
         8<-------------------------------------
 
+        'use' is a boolean flag which tells the program if it should load new
+        data from Flickr or just use the existing database.
+
         '''
 
-    cfg = ConfigParser.ConfigParser()
-    cfg.read('flickr.ini')
-    c = cfg.get
-    flickr_api.set_keys(c('Flickr', 'api_key'), c('Flickr', 'api_secret'))
+    config = ConfigParser.ConfigParser()
+    config.read('flickr.ini')
+
+    new_devices = {}
+    if config.getboolean('Flickr', 'use'):
+        print 'Getting new EXIF data from Flickr...'
+        new_devices = getDevices(
+            config.get('Flickr', 'api_key'), config.get('Flickr', 'api_secret'))
+
+    old_devices = {}
+
+    devices = {}
+    for k in set(old_devices.keys() + new_devices.keys()):
+        devices[k] = old_devices.get(k, 0) + new_devices.get(k, 0)
+
+
+def getDevices(api_key, api_secret):
+    ''' Gets the frequencies of devices used to make photos from a sample of
+        photos obtained from Flickr. '''
+
+    flickr_api.set_keys(api_key, api_secret)
     photos = findPhotos()
 
     devices = {}
@@ -39,8 +60,7 @@ def main():
     sys.stdout.write('\r\n')
     sys.stdout.flush()
 
-    freqs = [(v, k[0], k[1]) for k, v in devices.iteritems()]
-    freqs.sort(reverse=True)
+    return devices
 
 
 def getCameraInfo(photo):
