@@ -85,7 +85,7 @@ def getDevices(api_key, api_secret):
         device = getCameraInfo(photo)
         cur = devices.get(device, 0)
         devices[device] = cur + 1
-        sys.stdout.write('\rGot EXIF for photo #%d.' % count)
+        sys.stdout.write('\rGot EXIF for photo #%d' % count)
         sys.stdout.flush()
     sys.stdout.write('\r\n')
     sys.stdout.flush()
@@ -106,7 +106,7 @@ def getCameraInfo(photo):
 
     make = model = None
 
-    # linear search through the tags.
+    # Linear search through the tags.
     # We need to make the model and make normal strings, or pickle bugs out.
     make_encountered = model_encountered = False
     for e in exif_tags:
@@ -129,6 +129,7 @@ def findPhotos():
     # content_type 1 means "photo".
     # see https://www.flickr.com/services/api/flickr.photos.search.html
     return flickr_api.Photo.search(content_type=1, is_commons=True)
+
 
 if '__main__' == __name__:
     main()
