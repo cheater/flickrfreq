@@ -32,7 +32,7 @@ def main():
         cur = devices.get(device, 0)
         devices[device] = cur + 1
 
-    freqs = [(v, k) for k, v in devices.iteritems()
+    freqs = [(v, k[0], k[1]) for k, v in devices.iteritems()]
     freqs.sort(reverse=True)
 
 
