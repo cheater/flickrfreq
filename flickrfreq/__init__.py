@@ -1,7 +1,10 @@
 #!/usr/bin/env python
+''' This program makes statistics on Flickr photos. You have to install
+    flickr_api to use it.
+    '''
 
 import ConfigParser
-import flickrapi
+import flickr_api
 
 def main():
     ''' Runs the search and prints statistics.
@@ -20,18 +23,16 @@ def main():
     cfg = ConfigParser.ConfigParser()
     cfg.read('flickr.ini')
     c = cfg.get
+    flickr_api.set_keys(c('Flickr', 'api_key'), c('Flickr', 'api_secret'))
+    photos = findPhotos()
 
-    photos = findPhotos(
-        c('Flickr', 'api_key'), c('Flickr', 'api_secret'))
 
-
-def findPhotos(api_key, api_secret):
+def findPhotos():
     ''' Gets a list of photos that are creative commons. '''
-    flickr = flickrapi.FlickrAPI(api_key, api_secret)
 
     # content_type 1 means "photo".
     # see https://www.flickr.com/services/api/flickr.photos.search.html
-    return flickr.walk(content_type=1, is_commons=True)
+    return flickr_api.Photo.search(content_type=1, is_commons=True)
 
 if '__main__' == __name__:
     main()
