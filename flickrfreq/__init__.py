@@ -26,6 +26,44 @@ def main():
     flickr_api.set_keys(c('Flickr', 'api_key'), c('Flickr', 'api_secret'))
     photos = findPhotos()
 
+    devices = {}
+    for photo in photos:
+        device = getCameraInfo(photo)
+        cur = devices.get(device, 0)
+        devices[device] = cur + 1
+
+    freqs = [(v, k) for k, v in devices.iteritems()
+    freqs.sort(reverse=True)
+
+
+def getCameraInfo(photo):
+    ''' Takes a Photo from flickr_api and returns the make and model of the
+        device it was taken with. Sometimes those may be None. '''
+
+    try:
+        exif_tags = photo.getExif()
+    except flickr_api.flickrerrors.FlickrAPIError as e:
+        if 2 == e.code: # User disabled EXIF access for their photos.
+            exif_tags = []
+        else: raise
+
+    make = model = None
+
+    # linear search through the tags.
+    make_encountered = model_encountered = False
+    for e in exif_tags:
+        if 'make' == e.tag.lower():
+            make = e.raw.strip()
+            make_encountered = True
+        elif 'model' == e.tag.lower():
+            model = e.raw.strip()
+            model_encountered = True
+
+        if make_encountered and model_encountered:
+            break
+
+    return (make, model)
+
 
 def findPhotos():
     ''' Gets a list of photos that are creative commons. '''
